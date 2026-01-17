@@ -1,0 +1,112 @@
+-- Serviços necessários
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+-- Obtém o jogador local e seu PlayerGui
+local player = Players.LocalPlayer
+local playerGui = player:WaitForChild("PlayerGui")
+
+-- Cria a ScreenGui principal (container de toda a UI)
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ModernMobileInterface"
+screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling -- Controle de camadas
+screenGui.ResetOnSpawn = false -- A interface não some ao renascer
+screenGui.Parent = playerGui
+
+-- Cria um Frame principal (o fundo do menu)
+local mainFrame = Instance.new("Frame")
+mainFrame.Name = "MainMenu"
+mainFrame.Size = UDim2.new(0.85, 0, 0.6, 0) -- 85% da largura, 60% da altura
+mainFrame.Position = UDim2.new(0.5, 0, 0.5, 0) -- Centralizado
+mainFrame.AnchorPoint = Vector2.new(0.5, 0.5) -- Ponto de ancoragem no centro
+mainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35) -- Cinza azulado escuro
+mainFrame.BackgroundTransparency = 0.1 -- Leve transparência
+mainFrame.ClipsDescendants = true -- Conteúdo não vaza para fora
+
+-- ESTILO MODERNO: Cantos arredondados
+local uiCorner = Instance.new("UICorner")
+uiCorner.CornerRadius = UDim.new(0.04, 0) -- Cantos bem arredondados
+uiCorner.Parent = mainFrame
+
+-- ESTILO MODERNO: Sombra sutil
+local uiShadow = Instance.new("UIStroke")
+uiShadow.Color = Color3.fromRGB(60, 60, 80)
+uiShadow.Thickness = 2
+uiShadow.Transparency = 0.7
+uiShadow.Parent = mainFrame
+
+mainFrame.Parent = screenGui
+
+-- Cria um título estilizado
+local titleLabel = Instance.new("TextLabel")
+titleLabel.Name = "Title"
+titleLabel.Size = UDim2.new(1, -40, 0.15, 0) -- Largura total com margem
+titleLabel.Position = UDim2.new(0, 20, 0, 20)
+titleLabel.BackgroundTransparency = 1 -- Fundo invisível
+titleLabel.Text = "CONFIGURAÇÕES"
+titleLabel.Font = Enum.Font.GothamBold -- Fonte moderna
+titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
+titleLabel.TextSize = 24
+titleLabel.TextXAlignment = Enum.TextXAlignment.Left
+titleLabel.Parent = mainFrame
+
+-- Cria um botão moderno de fechar
+local closeButton = Instance.new("TextButton")
+closeButton.Name = "CloseButton"
+closeButton.Size = UDim2.new(0.12, 0, 0.12, 0)
+closeButton.Position = UDim2.new(0.86, 0, 0, 20)
+closeButton.BackgroundColor3 = Color3.fromRGB(45, 45, 60)
+closeButton.Text = "X"
+closeButton.Font = Enum.Font.GothamMedium
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.TextSize = 18
+
+local buttonCorner = Instance.new("UICorner")
+buttonCorner.CornerRadius = UDim.new(1, 0) -- Círculo perfeito
+buttonCorner.Parent = closeButton
+
+closeButton.Parent = mainFrame
+
+-- Cria um botão primário estilizado (ex: "Salvar")
+local primaryButton = Instance.new("TextButton")
+primaryButton.Name = "SaveButton"
+primaryButton.Size = UDim2.new(0.9, 0, 0.13, 0)
+primaryButton.Position = UDim2.new(0.05, 0, 0.8, 0)
+primaryButton.BackgroundColor3 = Color3.fromRGB(0, 120, 215) -- Azul vibrante
+primaryButton.Text = "SALVAR CONFIGURAÇÕES"
+primaryButton.Font = Enum.Font.GothamSemibold
+primaryButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+primaryButton.TextSize = 16
+
+local primaryCorner = Instance.new("UICorner")
+primaryCorner.CornerRadius = UDim.new(0.03, 0)
+primaryCorner.Parent = primaryButton
+
+primaryButton.Parent = mainFrame
+
+-- FUNCIONALIDADE: Animação de entrada (deslizando suavemente)
+mainFrame.Position = UDim2.new(0.5, 0, -0.6, 0) -- Posição inicial (fora da tela, acima)
+local slideInTween = TweenService:Create(
+    mainFrame,
+    TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    {Position = UDim2.new(0.5, 0, 0.5, 0)} -- Posição final (centro)
+)
+slideInTween:Play()
+
+-- FUNCIONALIDADE: Fechar o menu com animação
+local function closeMenu()
+    local slideOutTween = TweenService:Create(
+        mainFrame,
+        TweenInfo.new(0.4, Enum.EasingStyle.Quad, Enum.EasingDirection.In),
+        {Position = UDim2.new(0.5, 0, -0.6, 0)}
+    )
+    slideOutTween:Play()
+    slideOutTween.Completed:Wait()
+    screenGui:Destroy() -- Remove a UI após a animação
+end
+
+closeButton.MouseButton1Click:Connect(closeMenu)
+primaryButton.MouseButton1Click:Connect(function()
+    print("Configurações salvas!") -- Aqui você adiciona a lógica de salvar
+    closeMenu()
+end)
